@@ -70,7 +70,7 @@ interface UrlOptions {
      * which is not included into resulting URL
      * @default "."
      */
-    assetDir?: string;
+    assetDir?: string | ((original: string, resolved: string) => string);
     /**
      * Enable/disable name generation with hash for outputted CSS assets
      * or provide your own placeholder with the following blocks:
@@ -78,7 +78,6 @@ interface UrlOptions {
      * - `[ext]`: The file extension without a leading dot, e.g. `png`.
      * - `[hash(:<num>)]`: A hash based on the name and content of the asset (with optional length).
      * - `[name]`: The file name of the asset excluding any extension.
-     * - `[dir]`: The file path of the asset.
      *
      * Forward slashes / can be used to place files in sub-directories.
      * @default "assets/[name]-[hash][extname]" ("assets/[name][extname]" if false)

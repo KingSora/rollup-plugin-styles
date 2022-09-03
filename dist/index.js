@@ -768,7 +768,8 @@ const plugin$2 = (options = {}) => {
           node.type = "string";
           node.value = typeof publicPath === "function" ? publicPath(node.value) : publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to);
           if (urlQuery) node.value += urlQuery;
-          to = normalizePath(assetDir, to);
+          to = typeof assetDir === "string" ? normalizePath(assetDir, to) : to;
+          to = typeof assetDir === "function" ? assetDir(from, to) : to;
           res.messages.push({
             plugin: name$2,
             type: "asset",
