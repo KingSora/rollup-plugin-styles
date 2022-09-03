@@ -24,7 +24,7 @@ export interface UrlOptions {
    * Public Path for URLs in CSS files
    * @default "./"
    */
-  publicPath?: string | ((original: string) => string);
+  publicPath?: string | ((original: string, resolved: string) => string);
   /**
    * Directory path for outputted CSS assets,
    * which is not included into resulting URL
@@ -180,10 +180,15 @@ const plugin: PluginCreator<UrlOptions> = (options = {}) => {
 
           usedNames.set(to, from);
 
+          const resolvedPublicPath =
+            typeof publicPath === "string"
+              ? publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to)
+              : `./${path.basename(to)}`;
+
           node.type = "string";
           node.value =
             typeof publicPath === "function"
-              ? publicPath(node.value)
+              ? publicPath(node.value, resolvedPublicPath)
               : publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to);
 
           if (urlQuery) node.value += urlQuery;
