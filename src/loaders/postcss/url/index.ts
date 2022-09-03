@@ -57,9 +57,11 @@ export interface UrlOptions {
 }
 
 const plugin: PluginCreator<UrlOptions> = (options = {}) => {
+  const defaultpublicPath = "./";
+  const defaultAssetDir = ".";
   const inline = options.inline ?? false;
-  const publicPath = options.publicPath ?? "./";
-  const assetDir = options.assetDir ?? ".";
+  const publicPath = options.publicPath ?? defaultpublicPath;
+  const assetDir = options.assetDir ?? defaultAssetDir;
   const resolve = options.resolve ?? resolveDefault;
   const alias = options.alias ?? {};
   const placeholder =
@@ -183,16 +185,16 @@ const plugin: PluginCreator<UrlOptions> = (options = {}) => {
           const resolvedPublicPath =
             typeof publicPath === "string"
               ? publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to)
-              : `./${path.basename(to)}`;
+              : `${defaultpublicPath}${path.basename(to)}`;
 
           node.type = "string";
           node.value =
             typeof publicPath === "function"
               ? publicPath(node.value, resolvedPublicPath)
-              : publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to);
+              : resolvedPublicPath;
 
           if (urlQuery) node.value += urlQuery;
-          to = typeof assetDir === "string" ? normalizePath(assetDir, to) : to;
+          to = normalizePath(typeof assetDir === "string" ? assetDir : defaultAssetDir, to);
           to = typeof assetDir === "function" ? assetDir(from, to) : to;
 
           res.messages.push({ plugin: name, type: "asset", to, source });
