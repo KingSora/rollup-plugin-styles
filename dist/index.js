@@ -637,9 +637,11 @@ const placeholderNoHashDefault = "assets/[name][extname]";
 const plugin$2 = (options = {}) => {
   var _options$inline, _options$publicPath, _options$assetDir, _options$resolve, _options$alias, _options$hash;
 
+  const defaultpublicPath = "./";
+  const defaultAssetDir = ".";
   const inline = (_options$inline = options.inline) !== null && _options$inline !== void 0 ? _options$inline : false;
-  const publicPath = (_options$publicPath = options.publicPath) !== null && _options$publicPath !== void 0 ? _options$publicPath : "./";
-  const assetDir = (_options$assetDir = options.assetDir) !== null && _options$assetDir !== void 0 ? _options$assetDir : ".";
+  const publicPath = (_options$publicPath = options.publicPath) !== null && _options$publicPath !== void 0 ? _options$publicPath : defaultpublicPath;
+  const assetDir = (_options$assetDir = options.assetDir) !== null && _options$assetDir !== void 0 ? _options$assetDir : defaultAssetDir;
   const resolve = (_options$resolve = options.resolve) !== null && _options$resolve !== void 0 ? _options$resolve : resolve$1;
   const alias = (_options$alias = options.alias) !== null && _options$alias !== void 0 ? _options$alias : {};
   const placeholder = ((_options$hash = options.hash) !== null && _options$hash !== void 0 ? _options$hash : true) ? typeof options.hash === "string" ? options.hash : placeholderHashDefault : placeholderNoHashDefault;
@@ -765,10 +767,11 @@ const plugin$2 = (options = {}) => {
           }
 
           usedNames.set(to, from);
+          const resolvedPublicPath = typeof publicPath === "string" ? publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to) : `${defaultpublicPath}${path.basename(to)}`;
           node.type = "string";
-          node.value = typeof publicPath === "function" ? publicPath(node.value) : publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to);
+          node.value = typeof publicPath === "function" ? publicPath(node.value, resolvedPublicPath) : resolvedPublicPath;
           if (urlQuery) node.value += urlQuery;
-          to = typeof assetDir === "string" ? normalizePath(assetDir, to) : to;
+          to = normalizePath(typeof assetDir === "string" ? assetDir : defaultAssetDir, to);
           to = typeof assetDir === "function" ? assetDir(from, to) : to;
           res.messages.push({
             plugin: name$2,

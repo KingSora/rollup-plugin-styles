@@ -64,7 +64,7 @@ interface UrlOptions {
      * Public Path for URLs in CSS files
      * @default "./"
      */
-    publicPath?: string | ((original: string) => string);
+    publicPath?: string | ((original: string, resolved: string) => string);
     /**
      * Directory path for outputted CSS assets,
      * which is not included into resulting URL
