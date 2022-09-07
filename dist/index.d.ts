@@ -64,13 +64,13 @@ interface UrlOptions {
      * Public Path for URLs in CSS files
      * @default "./"
      */
-    publicPath?: string | ((original: string, resolved: string) => string);
+    publicPath?: string | ((original: string, resolved: string, file: string) => string);
     /**
      * Directory path for outputted CSS assets,
      * which is not included into resulting URL
      * @default "."
      */
-    assetDir?: string | ((original: string, resolved: string) => string);
+    assetDir?: string | ((original: string, resolved: string, file: string) => string);
     /**
      * Enable/disable name generation with hash for outputted CSS assets
      * or provide your own placeholder with the following blocks:

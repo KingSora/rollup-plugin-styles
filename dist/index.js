@@ -769,10 +769,10 @@ const plugin$2 = (options = {}) => {
           usedNames.set(to, from);
           const resolvedPublicPath = typeof publicPath === "string" ? publicPath + (/[/\\]$/.test(publicPath) ? "" : "/") + path.basename(to) : `${defaultpublicPath}${path.basename(to)}`;
           node.type = "string";
-          node.value = typeof publicPath === "function" ? publicPath(node.value, resolvedPublicPath) : resolvedPublicPath;
+          node.value = typeof publicPath === "function" ? publicPath(node.value, resolvedPublicPath, file) : resolvedPublicPath;
           if (urlQuery) node.value += urlQuery;
           to = normalizePath(typeof assetDir === "string" ? assetDir : defaultAssetDir, to);
-          to = typeof assetDir === "function" ? assetDir(from, to) : to;
+          to = typeof assetDir === "function" ? assetDir(from, to, file) : to;
           res.messages.push({
             plugin: name$2,
             type: "asset",
