@@ -939,7 +939,7 @@ const loader$4 = {
     const config = await loadConfig(this.id, options.config);
     const plugins = [];
     const autoModules = ensureAutoModules(options.autoModules, this.id);
-    const supportModules = Boolean(options.modules || autoModules);
+    const supportModules = options.autoModules ? autoModules : options.modules;
     const modulesExports = {};
     const postcssOpts = { ...config.options,
       ...options.postcss,

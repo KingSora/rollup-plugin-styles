@@ -46,7 +46,7 @@ const loader: Loader<PostCSSLoaderOptions> = {
     const config = await loadConfig(this.id, options.config);
     const plugins: AcceptedPlugin[] = [];
     const autoModules = ensureAutoModules(options.autoModules, this.id);
-    const supportModules = Boolean(options.modules || autoModules);
+    const supportModules = options.autoModules ? autoModules : options.modules;
     const modulesExports: Record<string, string> = {};
 
     const postcssOpts: PostCSSOptions = {
