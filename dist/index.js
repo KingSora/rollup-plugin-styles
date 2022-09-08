@@ -1618,7 +1618,7 @@ var index = ((options = {}) => {
     },
 
     async generateBundle(opts, bundle) {
-      var _opts$dir;
+      var _opts$dir, _options$extensions2;
 
       if (extracted.length === 0 || !(opts.dir || opts.file)) return; // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- either `file` or `dir` are always present
 
@@ -1637,7 +1637,10 @@ var index = ((options = {}) => {
         return {
           name: fileName,
           css: res.css,
-          map: mm(res.map.toString()).relative(path.dirname(path.resolve(dir, fileName))).toString()
+          map: mm(res.map.toString()).relative(path.dirname(path.resolve(dir, fileName))).toString(),
+          ids: entries.map(({
+            id
+          }) => id)
         };
       };
 
@@ -1719,11 +1722,28 @@ var index = ((options = {}) => {
         }
       }
 
+      const sortRegex = new RegExp(`(.*(${((_options$extensions2 = options.extensions) !== null && _options$extensions2 !== void 0 ? _options$extensions2 : []).join("|")}))$`);
+      emittedList.sort(([nameA], [nameB]) => {
+        const a = sortRegex.test(nameA);
+        const b = sortRegex.test(nameB);
+
+        if (a && !b) {
+          return -1;
+        }
+
+        if (!a && b) {
+          return 1;
+        }
+
+        return 0;
+      });
+      const idFilenameMap = new Map();
+
       for await (const [name, ids] of emittedList) {
         const res = await getExtractedData(name, ids);
 
         if (typeof options.onExtract === "function") {
-          const shouldExtract = options.onExtract(res);
+          const shouldExtract = options.onExtract.call(this, res, idFilenameMap);
           if (!shouldExtract) continue;
         } // Perform minimization on the extracted file
 
@@ -1753,6 +1773,7 @@ var index = ((options = {}) => {
           source: res.css
         };
         const cssFileId = this.emitFile(cssFile);
+        idFilenameMap.set(res.name, this.getFileName(cssFileId));
 
         if (res.map && sourceMap) {
           const fileName = this.getFileName(cssFileId);

@@ -71,6 +71,7 @@ export interface ExtractedData {
   map?: string;
   /** Output name for CSS */
   name: string;
+  ids: string[];
 }
 
 /** Options for CSS injection */
@@ -252,5 +253,5 @@ export interface Options {
    * Function which is invoked on CSS file extraction.
    * Return `boolean` to control if file should be extracted or not.
    */
-  onExtract?: (data: ExtractedData) => boolean;
+  onExtract?: (data: ExtractedData, map: Map<string, string>) => boolean;
 }

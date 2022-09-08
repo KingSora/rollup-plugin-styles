@@ -196,6 +196,7 @@ export default (options: Options = {}): Plugin => {
           map: mm(res.map.toString())
             .relative(path.dirname(path.resolve(dir, fileName)))
             .toString(),
+          ids: entries.map(({ id }) => id),
         };
       };
 
@@ -266,11 +267,26 @@ export default (options: Options = {}): Plugin => {
         }
       }
 
+      const sortRegex = new RegExp(`(.*(${(options.extensions ?? []).join("|")}))$`);
+      emittedList.sort(([nameA], [nameB]) => {
+        const a = sortRegex.test(nameA);
+        const b = sortRegex.test(nameB);
+        if (a && !b) {
+          return -1;
+        }
+        if (!a && b) {
+          return 1;
+        }
+        return 0;
+      });
+
+      const idFilenameMap = new Map();
+
       for await (const [name, ids] of emittedList) {
         const res = await getExtractedData(name, ids);
 
         if (typeof options.onExtract === "function") {
-          const shouldExtract = options.onExtract(res);
+          const shouldExtract = options.onExtract.call(this, res, idFilenameMap);
           if (!shouldExtract) continue;
         }
 
@@ -296,6 +312,8 @@ export default (options: Options = {}): Plugin => {
 
         const cssFile = { type: "asset" as const, name: res.name, source: res.css };
         const cssFileId = this.emitFile(cssFile);
+
+        idFilenameMap.set(res.name, this.getFileName(cssFileId));
 
         if (res.map && sourceMap) {
           const fileName = this.getFileName(cssFileId);
